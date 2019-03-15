@@ -4,10 +4,8 @@ import scipy
 from PIL import Image
 
 #Сигмоида
-def sigmoid(x, deriv = False):
-    if deriv:
-        return sigmoid(x) * (1 - sigmoid(x)) #Производная сигмоиды
-    return 1 / (1 + np.exp(-x))
+def sigmoid(Z):
+    return 1 / (1 + np.exp(-Z)), Z
 
 #Преобразование изображения 10x10 в одномерный массив длиной в 100 элементов
 def take_a_pic(im, rnd):
@@ -58,7 +56,6 @@ def inputWB(parameters):
         file.close()
         count += 1
     return 0
-
 #print(inputWB(initWB([10, 4, 2]))) #пример использования последних двух функций
 
 #Функция считывания параметров из файла
@@ -80,5 +77,42 @@ def outputWB(layers_dims):
         parameters["b" + str(count)] = matrix_b
         count += 1    
     return parameters
+#print(outputWB([10, 4, 2]))
 
-print(outputWB([10, 4, 2]))
+'''
+Feed Forward
+'''
+
+def linear_forward(A_prev, W, b):
+    Z = np.dot(W, A_prev) + b
+    cache = (A_prev, W, b)
+    return Z, cache
+
+def linear_activation_forward(A_prev, W, b):
+    Z, linear_cache = linear_forward(A_prev, W, b)
+    A, activation_cache = sigmoid(Z)
+    cache = (linear_cache, activation_cache)
+    return A, cache
+
+def L_model_forward(X, parameters):
+    A = X
+    caches = []
+    L = len(parameters) // 2
+    for l in range(1, L):
+        A_prev = A
+        A, cache = linear_activation_forward(
+            A_prev, parameters["W" + str(l)], parameters["b" + str(l)])
+        caches.append(cache)
+    AL, cache = linear_activation_forward(
+        A, parameters["W" + str(L)], parameters["b" + str(L)])
+    caches.append(cache)
+    return AL, caches
+
+
+
+'''
+Cross-Entropy cost
+'''
+
+#def compute_cost(AL, y)
+print (np.zeros((10,2)))
