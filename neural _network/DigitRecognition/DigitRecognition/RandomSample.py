@@ -33,10 +33,10 @@ class Rand:
         li2.remove(li2[0])
         li[a] = li2
         self.used = li
-        return im
-'''
+        return im,a
+
 s = Rand(1)
 while(s.notEmpty()):
-    image = s.next()
+    image,num = s.next()
     image.show()
-'''
+
