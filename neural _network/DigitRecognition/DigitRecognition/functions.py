@@ -114,5 +114,13 @@ def L_model_forward(X, parameters):
 Cross-Entropy cost
 '''
 
-#def compute_cost(AL, y)
-print (np.zeros((10,2)))
+def compute_cost(AL, y):
+    m = y.shape[1]
+    cost = - (1 / m) * np.sum(np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL)))
+    return cost
+
+
+'''
+Back-Propagation
+'''
+
