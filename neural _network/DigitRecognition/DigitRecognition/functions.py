@@ -10,10 +10,7 @@ def sigmoid(x, deriv = False):
     return 1 / (1 + np.exp(-x))
 
 #Преобразование изображения 10x10 в одномерный массив длиной в 100 элементов
-def take_a_pic():
-    rndFolder, rndSample = someFunc() #Нужно доделать функцию рандомайзера выбора файла с отсеиванием использованных файлов
-    im = Image.open("test_{}_{}.jpg".format(rndrndFolder, rndSample)) #Нужно разобраться как указывать путь относительно корневой папки а не диска Д
-    im.show()
+def take_a_pic(im, rnd):
     img_temp = np.asarray(im)
     img = np.zeros((100))
     count = 0
