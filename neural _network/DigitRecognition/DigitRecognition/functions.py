@@ -62,5 +62,26 @@ def inputWB(parameters):
         count += 1
     return 0
 
-#print(initWB([10, 4, 2]))
-print(inputWB(initWB([10, 4, 2])))
+#print(inputWB(initWB([10, 4, 2]))) #пример использования последних двух функций
+
+#Функция считывания параметров из файла
+def outputWB(layers_dims):
+    parameters = {}
+    count = 1
+    L = len(layers_dims)
+    for l in range(1, L):
+        matrix_W = np.zeros((layers_dims[l], layers_dims[l-1]))
+        matrix_b = np.zeros((layers_dims[l], 1))
+        file_W = open('W' + str(count) + '.txt', 'r')
+        file_b = open('b' + str(count) + '.txt', 'r')
+        for i in range(layers_dims[l]):
+            matrix_W[i] = file_W.readline().strip().split(' ')
+            matrix_b[i] = file_b.readline().strip().split(' ')
+        file_W.close()
+        file_b.close()
+        parameters["W" + str(count)] = matrix_W
+        parameters["b" + str(count)] = matrix_b
+        count += 1    
+    return parameters
+
+print(outputWB([10, 4, 2]))
