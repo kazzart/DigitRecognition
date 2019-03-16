@@ -3,9 +3,11 @@ import os
 from PIL import Image
 class Rand:
     used = []
+    Path = ""
     #инициализация, quantity - количество примеров
-    def __init__(self,quantity):
+    def __init__(self,quantity, folder = "learn"):
         r.seed(version =2)
+        self.Path = folder
         for i in range(10):
             li = []
             for i in range(quantity):
@@ -28,15 +30,15 @@ class Rand:
         while len(li[a]) == 0:
             a = r.randint(0,len(li)-1)
         li2 = li[a]
-        im = Image.open( os.path.join(os.path.realpath(r"..\..\..\ "),"samples","learn",str(a),"test_{}_{}.jpg".format(a, li2[0]) ) )
+        im = Image.open( os.path.join(os.path.realpath(r"..\..\..\ "),"samples",self.Path,str(a),"test_{}_{}.jpg".format(a, li2[0]) ) )
         li2.remove(li2[0])
         li[a] = li2
         self.used = li
         return im,a
 
-
+'''
 s = Rand(1)
 while(s.notEmpty()):
     image,num = s.next()
     image.show()
-
+'''
