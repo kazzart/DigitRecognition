@@ -124,3 +124,41 @@ def compute_cost(AL, y):
 Back-Propagation
 '''
 
+def sigmoid_gradient(dA, Z):
+    A, Z = sigmoid(Z)
+    dZ = dA * A * (1 - A)
+    return dZ
+
+def linear_backward(dZ, cache):
+    A_prev, W, b = cache
+    m = A_prev.shape[1]
+    dW = (1 / m) * np.dot(dZ, A_prev.T)
+    db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
+    dA_prev = np.dot(W.T, dZ)
+    return dA_prev, dW, db
+
+def linear_activation_backward(dA, cache):
+    linear_cache, activation_cache = cache
+    dZ = sigmoid_gradient(dA, activation_cache)
+    dA_prev, dW, db = linear_backward(dZ, linear_cache)
+    return dA_prev, dW,db
+
+def L_model_backward(AL, y, caches):
+    y = y.reshape(AL.shape)
+    L = len(caches)
+    grads = {}
+    dAL = np.divide(AL - y, np.multiply(AL, 1 - AL))
+    grads["dA" + str(L - 1)], grads["dW" + str(L)], grads["db" + str(L)] = linear_activation_backward(
+        dAL, caches[L - 1])
+    for l in range(L - 1, 0, -1):
+        current_cache = caches[l - 1]
+        grads["dA" + str(l - 1)], grads["dW" + str(l)], grads["db" + str(l)] = linear_activation_backward(
+        grads["dA" + str(l)], current_cache)
+    return grads
+
+def update_parameters(parameters, grads, learning_rate):
+    L = len(parameters) // 2
+    for l in range(1, L + 1):
+        parameters["W" + str(l)] = parameters["W" + str(l)] - learning_rate * grads["dW" + str(l)]
+        parameters["b" + str(l)] = parameters["b" + str(l)] - learning_rate * grads["db" + str(l)]
+        return parameters
