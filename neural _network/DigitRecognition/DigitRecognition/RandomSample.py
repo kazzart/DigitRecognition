@@ -32,8 +32,6 @@ class Rand:
         li2 = li[a]
         im = Image.open( os.path.join(os.path.realpath(r"..\..\..\ "),"samples",self.Path,str(a),"test_{}_{}.jpg".format(a, li2[0]) ) )
         li2.remove(li2[0])
-        li[a] = li2
-        self.used = li
         return im,a
 
 '''
