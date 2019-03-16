@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0ca8e8f6-f5e0-4833-9e15-54a508f50e24</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>functions.py</StartupFile>
+    <StartupFile>program.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,6 +22,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="functions.py" />
+    <Compile Include="program.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RandomSample.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

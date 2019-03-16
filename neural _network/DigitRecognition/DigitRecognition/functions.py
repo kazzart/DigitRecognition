@@ -21,7 +21,7 @@ def take_a_pic(im, rnd):
     return img, answer
 
 #Инициализация случайных весов и сдвигов
-def initWB(layers_dims):
+def init_parameters(layers_dims):
     np.random.seed(1)
     parameters = {}
     L = len(layers_dims)
@@ -32,7 +32,7 @@ def initWB(layers_dims):
     return parameters
 
 #Функция записи параметров в файл
-def inputWB(parameters):
+def input_parameters(parameters):
     count = 1
     string = ''
     while np.all(parameters.get("W" + str(count))) != None:

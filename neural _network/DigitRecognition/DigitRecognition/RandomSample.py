@@ -35,8 +35,9 @@ class Rand:
         self.used = li
         return im,a
 
+'''
 s = Rand(1)
 while(s.notEmpty()):
     image,num = s.next()
     image.show()
-
+'''
