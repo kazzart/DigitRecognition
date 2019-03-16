@@ -36,19 +36,12 @@ def accuracy(X, parameters, y):
 
 
 
-s = Rand(4)
+s = Rand(20)
 if s.notEmpty():
     image, num = s.next()
     X1, y1 = fn.take_a_pic(image, num)
     X = np.array([X1]).T
     y = np.array([y1]).T
-    '''
-    image, num = s.next()
-    X2, y2 = fn.take_a_pic(image, num)
-    image.show()
-    X_train = np.array([X1, X2]).T
-    y_train = np.array([y1, y2]).T
-    '''
     #print (np.shape(X), np.shape(y))
 
 while(s.notEmpty()):

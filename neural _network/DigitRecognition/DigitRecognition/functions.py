@@ -11,6 +11,7 @@ def sigmoid(Z):
 def take_a_pic(im, rnd):
     img_temp = np.asarray(im)
     img = np.zeros((100))
+    print (img_temp)
     count = 0
     for i in img_temp:
         for j in i:
