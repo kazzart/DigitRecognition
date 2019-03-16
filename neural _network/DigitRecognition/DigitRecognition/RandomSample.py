@@ -27,17 +27,16 @@ class Rand:
         a = r.randint(0,len(li)-1)
         while len(li[a]) == 0:
             a = r.randint(0,len(li)-1)
-        #print(str(a) + " , " + str(li[a]))
         li2 = li[a]
-        im = Image.open(os.path.realpath(r"..\..\..\samples\learn\{}\test_{}_{}.jpg".format(a, a, li2[0])))
+        im = Image.open( os.path.join(os.path.realpath(r"..\..\..\ "),"samples","learn",str(a),"test_{}_{}.jpg".format(a, li2[0]) ) )
         li2.remove(li2[0])
         li[a] = li2
         self.used = li
         return im,a
 
-'''
+
 s = Rand(1)
 while(s.notEmpty()):
     image,num = s.next()
     image.show()
-'''
+
