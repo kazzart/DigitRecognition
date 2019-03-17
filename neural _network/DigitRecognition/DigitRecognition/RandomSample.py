@@ -27,7 +27,7 @@ class Rand:
     #выдаёт следующее рандомное изображение
     def next(self):
         li = self.used
-        print(len(self.used))
+        #print(len(self.used))
         a = r.randint(0,len(li)-1)
         while len(li[a]) == 0:
             a = r.randint(0,len(li)-1)

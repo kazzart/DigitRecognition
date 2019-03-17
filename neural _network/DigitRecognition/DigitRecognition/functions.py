@@ -23,7 +23,7 @@ def take_a_pic(im, rnd):
 
 #Инициализация случайных весов и сдвигов
 def init_parameters(layers_dims):
-    np.random.seed(1)
+    np.random.seed(8)
     parameters = {}
     L = len(layers_dims)
     for l in range(1, L):

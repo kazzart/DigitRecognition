@@ -37,7 +37,7 @@ def accuracy(X, parameters, y):
 
 
 
-s = Rand(60)
+s = Rand(30)
 if s.notEmpty():
     image, num = s.next()
     X1, y1 = fn.take_a_pic(image, num)
@@ -76,7 +76,7 @@ while(t.notEmpty()):
 layers_dims = [X_train.shape[0], 30, 10]
 parameters = L_layer_model(
     X_train/255, y_train, layers_dims,
-    learning_rate = 0.03, num_iterations = 3000)
+    learning_rate = 0.08, num_iterations = 3000)
 fn.input_parameters(parameters)
 
 print (accuracy(X_test/255, parameters, y_test))
