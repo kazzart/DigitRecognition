@@ -6,6 +6,7 @@ class Rand:
     Path = ""
     #инициализация, quantity - количество примеров
     def __init__(self,quantity, folder = "learn"):
+        self.used = []
         r.seed(version =2)
         self.Path = folder
         for i in range(10):
@@ -36,7 +37,7 @@ class Rand:
         return im,a
 
 '''
-s = Rand(1)
+s = Rand(10,"test")
 while(s.notEmpty()):
     image,num = s.next()
     image.show()
