@@ -36,7 +36,7 @@ def accuracy(X, parameters, y):
 
 
 
-s = Rand(5)
+s = Rand(60)
 if s.notEmpty():
     image, num = s.next()
     X1, y1 = fn.take_a_pic(image, num)
