@@ -5,39 +5,60 @@ import scipy
 import functions as fn
 from RandomSample import Rand
 
+
+# Define the multi-layer model using all the helper functions we wrote before
 def L_layer_model(
-        X, y, layers_dims, learning_rate = 0.01, num_iterations = 3000, 
-        print_cost = True):
+        X, y, layers_dims, learning_rate=0.01, num_iterations=3000,
+        print_cost=True, hidden_layers_activation_fn="relu"):
     np.random.seed(1)
-    parameters = fn.init_parameters(layers_dims)
+
+    # initialize parameters
+    parameters = fn.initialize_parameters(layers_dims)
+
+    # intialize cost list
     cost_list = []
 
+    # iterate over num_iterations
     for i in range(num_iterations):
-        AL, caches = fn.L_model_forward(X, parameters)
-        #print (AL)
+        # iterate over L-layers to get the final output and the cache
+        AL, caches = fn.L_model_forward(
+            X, parameters, hidden_layers_activation_fn)
+
+        # compute cost to plot it
         cost = fn.compute_cost(AL, y)
-        grads = fn.L_model_backward(AL, y, caches)
+
+        # iterate over L-layers backward to get gradients
+        grads = fn.L_model_backward(AL, y, caches, hidden_layers_activation_fn)
+
+        # update parameters
         parameters = fn.update_parameters(parameters, grads, learning_rate)
+
+        # append each 100th cost to the cost list
         if (i + 1) % 100 == 0 and print_cost:
             print(f"The cost after {i + 1} iterations is: {cost:.4f}")
+
         if i % 100 == 0:
             cost_list.append(cost)
-    plt.figure(figsize = (10, 6))
+
+    # plot the cost curve
+    plt.figure(figsize=(10, 6))
     plt.plot(cost_list)
     plt.xlabel("Iterations (per hundreds)")
     plt.ylabel("Loss")
     plt.title(f"Loss curve for the learning rate = {learning_rate}")
+
     return parameters
 
-def accuracy(X, parameters, y):
-    probs, caches = fn.L_model_forward(X, parameters)
+
+def accuracy(X, parameters, y, activation_fn="relu"):
+    probs, caches = fn.L_model_forward(X, parameters, activation_fn)
     labels = (probs >= 0.5) * 1
     accuracy = np.mean(labels == y) * 100
     return f"The accuracy rate is: {accuracy:.2f}%."
 
 
 
-s = Rand(30)
+s = Rand(60)
 if s.notEmpty():
     image, num = s.next()
     X1, y1 = fn.take_a_pic(image, num)
@@ -71,14 +92,17 @@ while(t.notEmpty()):
     y_test = np.concatenate((y_test, y2), axis = 1)
     print (np.shape(X_test), np.shape(y_test))
 
+X_train /= 255
+X_test /= 255
+
 #print (X_train/255)
 
-layers_dims = [X_train.shape[0], 30, 10]
-parameters = L_layer_model(
-    X_train/255, y_train, layers_dims,
-    learning_rate = 0.08, num_iterations = 3000)
+layers_dims = [X_train.shape[0], 12, 12, 10]
+parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=3000, hidden_layers_activation_fn="tanh")
 fn.input_parameters(parameters)
 
-print (accuracy(X_test/255, parameters, y_test))
+print (accuracy(X_test, parameters, y_test))
+
+
 
     

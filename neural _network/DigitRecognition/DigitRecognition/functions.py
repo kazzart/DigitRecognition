@@ -3,9 +3,35 @@ import random
 import scipy
 from PIL import Image
 
+
+'''
+Функции активации
+'''
+
 #Сигмоида
 def sigmoid(Z):
-    return 1 / (1 + np.exp(-Z)), Z
+    A = 1 / (1 + np.exp(-Z))
+    return A, Z
+
+#Гиперболический тангенс
+def tanh(Z):
+    A = np.tanh(Z)
+    return A, Z
+
+#ReLU
+def relu(Z):
+    A = np.maximum(0, Z)
+    return A, Z
+
+#Leaky ReLU
+def leaky_relu(Z):
+    A = np.maximum(0.1 * Z, Z)
+    return A, Z
+
+
+'''
+Работа с файлами
+'''
 
 #Преобразование изображения 10x10 в одномерный массив длиной в 100 элементов
 def take_a_pic(im, rnd):
@@ -17,19 +43,31 @@ def take_a_pic(im, rnd):
         for j in i:
             img[count] = j
             count += 1
+
     answer = np.zeros((10))
     answer[rnd] = 1
     return img, answer
 
 #Инициализация случайных весов и сдвигов
-def init_parameters(layers_dims):
-    np.random.seed(8)
+def initialize_parameters(layers_dims):
+    np.random.seed(1)               
     parameters = {}
-    L = len(layers_dims)
+    L = len(layers_dims)            
+
+
+    
     for l in range(1, L):
+   
         parameters["W" + str(l)] = np.random.randn(
-            layers_dims[l], layers_dims[l-1]) * 0.01
+        layers_dims[l], layers_dims[l - 1]) * 0.01
         parameters["b" + str(l)] = np.zeros((layers_dims[l], 1))
+
+
+    assert parameters["W" + str(l)].shape == (
+    layers_dims[l], layers_dims[l - 1])
+    assert parameters["b" + str(l)].shape == (layers_dims[l], 1)
+ 
+
     return parameters
 
 #Функция записи параметров в файл
@@ -84,31 +122,54 @@ def outputWB(layers_dims):
 Feed Forward
 '''
 
+# Define helper functions that will be used in L-model forward prop
 def linear_forward(A_prev, W, b):
     Z = np.dot(W, A_prev) + b
     cache = (A_prev, W, b)
     return Z, cache
 
-def linear_activation_forward(A_prev, W, b):
-    Z, linear_cache = linear_forward(A_prev, W, b)
-    A, activation_cache = sigmoid(Z)
+
+def linear_activation_forward(A_prev, W, b, activation_fn):
+    assert activation_fn == "sigmoid" or activation_fn == "tanh" or \
+        activation_fn == "relu"
+
+    if activation_fn == "sigmoid":
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = sigmoid(Z)
+
+    elif activation_fn == "tanh":
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = tanh(Z)
+
+    elif activation_fn == "relu":
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = relu(Z)
+
+    assert A.shape == (W.shape[0], A_prev.shape[1])
+
     cache = (linear_cache, activation_cache)
     return A, cache
 
-def L_model_forward(X, parameters):
-    A = X
-    caches = []
-    L = len(parameters) // 2
+
+def L_model_forward(X, parameters, hidden_layers_activation_fn="relu"):
+    A = X                           
+    caches = []                     
+    L = len(parameters) // 2        
+
     for l in range(1, L):
         A_prev = A
         A, cache = linear_activation_forward(
-            A_prev, parameters["W" + str(l)], parameters["b" + str(l)])
+            A_prev, parameters["W" + str(l)], parameters["b" + str(l)],
+            activation_fn=hidden_layers_activation_fn)
         caches.append(cache)
-    AL, cache = linear_activation_forward(
-        A, parameters["W" + str(L)], parameters["b" + str(L)])
-    caches.append(cache)
-    return AL, caches
 
+    AL, cache = linear_activation_forward(
+        A, parameters["W" + str(L)], parameters["b" + str(L)],
+        activation_fn="sigmoid")
+    caches.append(cache)
+
+    assert AL.shape == (10, X.shape[1])
+    return AL, caches
 
 
 '''
@@ -116,8 +177,9 @@ Cross-Entropy cost
 '''
 
 def compute_cost(AL, y):
-    m = y.shape[1]
-    cost = - (1 / m) * np.sum(np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL)))
+    m = y.shape[1]              
+    cost = - (1 / m) * np.sum(
+        np.multiply(y, np.log(AL)) + np.multiply(1 - y, np.log(1 - AL)))
     return cost
 
 
@@ -128,38 +190,85 @@ Back-Propagation
 def sigmoid_gradient(dA, Z):
     A, Z = sigmoid(Z)
     dZ = dA * A * (1 - A)
+
     return dZ
 
-def linear_backward(dZ, cache):
+
+def tanh_gradient(dA, Z):
+    A, Z = tanh(Z)
+    dZ = dA * (1 - np.square(A))
+
+    return dZ
+
+
+def relu_gradient(dA, Z):
+    A, Z = relu(Z)
+    dZ = np.multiply(dA, np.int64(A > 0))
+
+    return dZ
+
+
+# define helper functions that will be used in L-model back-prop
+def linear_backword(dZ, cache):
     A_prev, W, b = cache
     m = A_prev.shape[1]
+
     dW = (1 / m) * np.dot(dZ, A_prev.T)
     db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
     dA_prev = np.dot(W.T, dZ)
+
+    assert dA_prev.shape == A_prev.shape
+    assert dW.shape == W.shape
+    assert db.shape == b.shape
+
     return dA_prev, dW, db
 
-def linear_activation_backward(dA, cache):
-    linear_cache, activation_cache = cache
-    dZ = sigmoid_gradient(dA, activation_cache)
-    dA_prev, dW, db = linear_backward(dZ, linear_cache)
-    return dA_prev, dW,db
 
-def L_model_backward(AL, y, caches):
-    y = y.reshape(AL.shape)
+def linear_activation_backward(dA, cache, activation_fn):
+    linear_cache, activation_cache = cache
+
+    if activation_fn == "sigmoid":
+        dZ = sigmoid_gradient(dA, activation_cache)
+        dA_prev, dW, db = linear_backword(dZ, linear_cache)
+
+    elif activation_fn == "tanh":
+        dZ = tanh_gradient(dA, activation_cache)
+        dA_prev, dW, db = linear_backword(dZ, linear_cache)
+
+    elif activation_fn == "relu":
+        dZ = relu_gradient(dA, activation_cache)
+        dA_prev, dW, db = linear_backword(dZ, linear_cache)
+
+    return dA_prev, dW, db
+
+
+def L_model_backward(AL, y, caches, hidden_layers_activation_fn="relu"):
+    #y = y.reshape(AL.shape)
     L = len(caches)
     grads = {}
+
     dAL = np.divide(AL - y, np.multiply(AL, 1 - AL))
-    grads["dA" + str(L - 1)], grads["dW" + str(L)], grads["db" + str(L)] = linear_activation_backward(
-        dAL, caches[L - 1])
+
+    grads["dA" + str(L - 1)], grads["dW" + str(L)], grads[
+        "db" + str(L)] = linear_activation_backward(
+            dAL, caches[L - 1], "sigmoid")
+
     for l in range(L - 1, 0, -1):
         current_cache = caches[l - 1]
-        grads["dA" + str(l - 1)], grads["dW" + str(l)], grads["db" + str(l)] = linear_activation_backward(
-        grads["dA" + str(l)], current_cache)
+        grads["dA" + str(l - 1)], grads["dW" + str(l)], grads[
+            "db" + str(l)] = linear_activation_backward(
+                grads["dA" + str(l)], current_cache,
+                hidden_layers_activation_fn)
+
     return grads
+
 
 def update_parameters(parameters, grads, learning_rate):
     L = len(parameters) // 2
+
     for l in range(1, L + 1):
-        parameters["W" + str(l)] = parameters["W" + str(l)] - learning_rate * grads["dW" + str(l)]
-        parameters["b" + str(l)] = parameters["b" + str(l)] - learning_rate * grads["db" + str(l)]
-        return parameters
+        parameters["W" + str(l)] = parameters[
+            "W" + str(l)] - learning_rate * grads["dW" + str(l)]
+        parameters["b" + str(l)] = parameters[
+            "b" + str(l)] - learning_rate * grads["db" + str(l)]
+    return parameters
