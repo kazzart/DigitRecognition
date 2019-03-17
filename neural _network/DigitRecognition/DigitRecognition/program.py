@@ -56,14 +56,14 @@ while(s.notEmpty()):
 
 t = Rand(10, 'test')
 if t.notEmpty():
-    image, num = s.next()
+    image, num = t.next()
     X1, y1 = fn.take_a_pic(image, num)
     X_test = np.array([X1]).T
     y_test = np.array([y1]).T
     #print (np.shape(X), np.shape(y))
 
-while(s.notEmpty()):
-    image, num = s.next()
+while(t.notEmpty()):
+    image, num = t.next()
     X1, y1 = fn.take_a_pic(image, num)
     X2 = np.array([X1]).T
     y2 = np.array([y1]).T
