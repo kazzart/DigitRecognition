@@ -48,7 +48,6 @@ def L_layer_model(
     plt.xlabel("Iterations (per hundreds)")
     plt.ylabel("Loss")
     plt.title(f"Loss curve for the learning rate = {learning_rate}")
-
     return parameters
 
 
@@ -59,15 +58,11 @@ def accuracy(X, parameters, y, activation_fn="relu"):
         flag = True
         max = 0
         for j in range(10):
-            #probs[i,j] = 0
-            
             if probs[i][j]>max:
                 max = probs[i][j]
                 
         
         for j in range(10):
-            #probs[i,j] = 0
-            
             if probs[i][j]==max and flag:
                 probs[i][j] = 1
                 flag = False
@@ -75,9 +70,19 @@ def accuracy(X, parameters, y, activation_fn="relu"):
                 probs[i][j] = 0
                 
        
-    labels = probs.T
+    labels = probs
+    y = y.T
     print(labels, y)
-    accuracy = np.mean(labels == y) * 100
+    count = 0
+    for i in range(100):
+        flag = True
+        for j in range(10):
+            if labels[i][j] != y[i][j]:
+                flag = False
+                break
+        if flag:
+            count +=1
+    accuracy = count
     return f"The accuracy rate is: {accuracy:.2f}%."
 
 
@@ -118,7 +123,7 @@ while(t.notEmpty()):
 
 X_train /= 255
 X_test /= 255
-
+'''
 im = Image.open('test_1_7.jpg')
 img_temp = np.asarray(im)
 img = np.zeros((100))
@@ -131,17 +136,17 @@ for i in img_temp:
 
 answer = np.zeros((10))
 answer[1] = 1
-
+'''
 #print (X_train/255)
 
 layers_dims = [X_train.shape[0], 30, 10]
-parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=5000, hidden_layers_activation_fn="tanh")
+parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.01, num_iterations=10000, hidden_layers_activation_fn="tanh")
 fn.input_parameters(parameters)
 
 print (accuracy(X_test, fn.outputWB(layers_dims), y_test))
-probs, caches = fn.L_model_forward(img/255, fn.outputWB(layers_dims), "relu")
-print("answer:")
-print (probs)
+#probs, caches = fn.L_model_forward(img/255, fn.outputWB(layers_dims), "relu")
+#print("answer:")
+#print (probs)
 
 
 
