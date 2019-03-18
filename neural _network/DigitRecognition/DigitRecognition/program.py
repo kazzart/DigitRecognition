@@ -1,46 +1,48 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import scipy
+from PIL import Image
+#import scipy
 import functions as fn
 from RandomSample import Rand
 
 
-# Define the multi-layer model using all the helper functions we wrote before
+
 def L_layer_model(
         X, y, layers_dims, learning_rate=0.01, num_iterations=3000,
         print_cost=True, hidden_layers_activation_fn="relu"):
-    np.random.seed(1)
+    random.seed(version =2)
+    np.random.seed(random.randint(0,1000))
 
-    # initialize parameters
+    
     parameters = fn.initialize_parameters(layers_dims)
 
-    # intialize cost list
+    
     cost_list = []
 
-    # iterate over num_iterations
+    
     for i in range(num_iterations):
-        # iterate over L-layers to get the final output and the cache
+    
         AL, caches = fn.L_model_forward(
             X, parameters, hidden_layers_activation_fn)
 
-        # compute cost to plot it
+    
         cost = fn.compute_cost(AL, y)
 
-        # iterate over L-layers backward to get gradients
+    
         grads = fn.L_model_backward(AL, y, caches, hidden_layers_activation_fn)
 
-        # update parameters
+    
         parameters = fn.update_parameters(parameters, grads, learning_rate)
 
-        # append each 100th cost to the cost list
+    
         if (i + 1) % 100 == 0 and print_cost:
             print(f"The cost after {i + 1} iterations is: {cost:.4f}")
 
         if i % 100 == 0:
             cost_list.append(cost)
 
-    # plot the cost curve
+    
     plt.figure(figsize=(10, 6))
     plt.plot(cost_list)
     plt.xlabel("Iterations (per hundreds)")
@@ -52,7 +54,29 @@ def L_layer_model(
 
 def accuracy(X, parameters, y, activation_fn="relu"):
     probs, caches = fn.L_model_forward(X, parameters, activation_fn)
-    labels = (probs >= 0.5) * 1
+    probs = probs.T
+    for i in range(100):
+        flag = True
+        max = 0
+        for j in range(10):
+            #probs[i,j] = 0
+            
+            if probs[i][j]>max:
+                max = probs[i][j]
+                
+        
+        for j in range(10):
+            #probs[i,j] = 0
+            
+            if probs[i][j]==max and flag:
+                probs[i][j] = 1
+                flag = False
+            else:
+                probs[i][j] = 0
+                
+       
+    labels = probs.T
+    print(labels, y)
     accuracy = np.mean(labels == y) * 100
     return f"The accuracy rate is: {accuracy:.2f}%."
 
@@ -95,13 +119,29 @@ while(t.notEmpty()):
 X_train /= 255
 X_test /= 255
 
+im = Image.open('test_1_7.jpg')
+img_temp = np.asarray(im)
+img = np.zeros((100))
+#print (img_temp, rnd)
+count = 0
+for i in img_temp:
+    for j in i:
+        img[count] = j
+        count += 1
+
+answer = np.zeros((10))
+answer[1] = 1
+
 #print (X_train/255)
 
-layers_dims = [X_train.shape[0], 12, 12, 10]
-parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=3000, hidden_layers_activation_fn="tanh")
+layers_dims = [X_train.shape[0], 30, 10]
+parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=5000, hidden_layers_activation_fn="tanh")
 fn.input_parameters(parameters)
 
-print (accuracy(X_test, parameters, y_test))
+print (accuracy(X_test, fn.outputWB(layers_dims), y_test))
+probs, caches = fn.L_model_forward(img/255, fn.outputWB(layers_dims), "relu")
+print("answer:")
+print (probs)
 
 
 

@@ -20,10 +20,7 @@ class Rand:
             if len(line) > 0:
                 return True
         return False
-    #так, хуйня для дебага
-    def show(self):
-        for i in self.used:
-            print(i)
+    
     #выдаёт следующее рандомное изображение
     def next(self):
         li = self.used

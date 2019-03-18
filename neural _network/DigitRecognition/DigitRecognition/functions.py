@@ -1,6 +1,6 @@
 import numpy as np
 import random
-import scipy
+#import scipy
 from PIL import Image
 
 
@@ -50,7 +50,8 @@ def take_a_pic(im, rnd):
 
 #Инициализация случайных весов и сдвигов
 def initialize_parameters(layers_dims):
-    np.random.seed(1)               
+    random.seed(version =2)
+    np.random.seed(random.randint(0,1000))              
     parameters = {}
     L = len(layers_dims)            
 
@@ -122,7 +123,6 @@ def outputWB(layers_dims):
 Feed Forward
 '''
 
-# Define helper functions that will be used in L-model forward prop
 def linear_forward(A_prev, W, b):
     Z = np.dot(W, A_prev) + b
     cache = (A_prev, W, b)
@@ -208,7 +208,7 @@ def relu_gradient(dA, Z):
     return dZ
 
 
-# define helper functions that will be used in L-model back-prop
+
 def linear_backword(dZ, cache):
     A_prev, W, b = cache
     m = A_prev.shape[1]
@@ -243,7 +243,7 @@ def linear_activation_backward(dA, cache, activation_fn):
 
 
 def L_model_backward(AL, y, caches, hidden_layers_activation_fn="relu"):
-    #y = y.reshape(AL.shape)
+    
     L = len(caches)
     grads = {}
 
