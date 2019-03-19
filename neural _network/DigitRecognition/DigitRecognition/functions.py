@@ -124,6 +124,10 @@ Feed Forward
 '''
 
 def linear_forward(A_prev, W, b):
+
+    #if len(np.shape(A_prev)) == 1:
+    #    Z = np.dot(W, np.array([A_prev]).T) + b
+    #else:
     Z = np.dot(W, A_prev) + b
     cache = (A_prev, W, b)
     return Z, cache
@@ -145,7 +149,7 @@ def linear_activation_forward(A_prev, W, b, activation_fn):
         Z, linear_cache = linear_forward(A_prev, W, b)
         A, activation_cache = relu(Z)
 
-    assert A.shape == (W.shape[0], A_prev.shape[1])
+    #assert A.shape == (W.shape[0], A_prev.shape[1])
 
     cache = (linear_cache, activation_cache)
     return A, cache
@@ -168,7 +172,7 @@ def L_model_forward(X, parameters, hidden_layers_activation_fn="relu"):
         activation_fn="sigmoid")
     caches.append(cache)
 
-    assert AL.shape == (10, X.shape[1])
+    #assert AL.shape == (10, X.shape[1])
     return AL, caches
 
 

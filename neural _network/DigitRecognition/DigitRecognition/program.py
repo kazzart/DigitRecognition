@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 from PIL import Image
+import os
 #import scipy
 import functions as fn
 from RandomSample import Rand
@@ -51,19 +52,23 @@ def L_layer_model(
     return parameters
 
 
-def accuracy(X, parameters, y, activation_fn="relu"):
+def accuracy(X, parameters, y, q, activation_fn="relu"):
     probs, caches = fn.L_model_forward(X, parameters, activation_fn)
     probs = probs.T
-    for i in range(100):
+    print(probs)    
+    for i in range(np.shape(probs)[0]):
         flag = True
-        max = 0
-        for j in range(10):
-            if probs[i][j]>max:
-                max = probs[i][j]
+        #print (np.asarray(probs[i]))
+        li = np.asarray(probs[i])
+        Max = max(li)
+        
+        #for j in range(np.shape(probs)[1]):
+        #    if probs[i][j]>max:
+        #        max = probs[i][j]
                 
         
-        for j in range(10):
-            if probs[i][j]==max and flag:
+        for j in range(np.shape(probs)[1]):
+            if probs[i][j]==Max and flag:
                 probs[i][j] = 1
                 flag = False
             else:
@@ -72,17 +77,28 @@ def accuracy(X, parameters, y, activation_fn="relu"):
        
     labels = probs
     y = y.T
-    print(labels, y)
+    #print(labels, y)
     count = 0
-    for i in range(100):
+    acc = {}
+    
+    for i in range(10):
+        acc[i] = 0
+    for i in range(np.shape(probs)[0]):
         flag = True
-        for j in range(10):
+        for j in range(np.shape(probs)[1]):
             if labels[i][j] != y[i][j]:
                 flag = False
                 break
+            elif labels[i][j] == 1:
+                acc[j] +=1
         if flag:
             count +=1
+    for i in range(10):
+        acc[i] *= np.shape(probs)[0]/10
     accuracy = count
+    print(acc)
+    print()
+    
     return f"The accuracy rate is: {accuracy:.2f}%."
 
 
@@ -102,29 +118,47 @@ while(s.notEmpty()):
     y2 = np.array([y1]).T
     X_train = np.concatenate((X_train, X2), axis = 1)
     y_train = np.concatenate((y_train, y2), axis = 1)
-    print (np.shape(X_train), np.shape(y_train))
+    #print (np.shape(X_train), np.shape(y_train))
 
+coun = 0
+coun2 = 1
+q = 0
 t = Rand(10, 'test')
 if t.notEmpty():
     image, num = t.next()
+    if num == 2:
+        coun +=1
     X1, y1 = fn.take_a_pic(image, num)
     X_test = np.array([X1]).T
     y_test = np.array([y1]).T
     #print (np.shape(X), np.shape(y))
 
 while(t.notEmpty()):
+    coun2 += 1
     image, num = t.next()
+    if num == 2:
+        coun+= 1
+    if coun == 6:
+        q = coun2
     X1, y1 = fn.take_a_pic(image, num)
     X2 = np.array([X1]).T
     y2 = np.array([y1]).T
     X_test = np.concatenate((X_test, X2), axis = 1)
     y_test = np.concatenate((y_test, y2), axis = 1)
-    print (np.shape(X_test), np.shape(y_test))
+    #print (np.shape(X_test), np.shape(y_test))
 
 X_train /= 255
-X_test /= 255
-'''
-im = Image.open('test_1_7.jpg')
+#X_test /= 255
+
+layers_dims = [X_train.shape[0], 30, 10]
+
+parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=8000, hidden_layers_activation_fn="tanh")
+fn.input_parameters(parameters)
+
+print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
+path = input("Введите название файла в папке working, включая расширение: ")
+path = os.path.join(os.path.realpath(r"..\..\..\ "),"samples","working",path)
+im = Image.open(path)
 img_temp = np.asarray(im)
 img = np.zeros((100))
 #print (img_temp, rnd)
@@ -134,19 +168,26 @@ for i in img_temp:
         img[count] = j
         count += 1
 
-answer = np.zeros((10))
-answer[1] = 1
-'''
-#print (X_train/255)
+img = np.concatenate((np.array([img]).T, np.array([img]).T), axis = 1)
+#print (img)
+X_test = img
 
-layers_dims = [X_train.shape[0], 30, 10]
-parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.01, num_iterations=10000, hidden_layers_activation_fn="tanh")
-fn.input_parameters(parameters)
+X_test /= 255
 
-print (accuracy(X_test, fn.outputWB(layers_dims), y_test))
-#probs, caches = fn.L_model_forward(img/255, fn.outputWB(layers_dims), "relu")
-#print("answer:")
-#print (probs)
+
+
+
+#print ((img/255).T)
+probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims), "relu")
+print("answer:")
+print(probs)
+ans = np.asarray(probs.T[0])
+Max = max(ans)
+for i in range(len(ans)):
+    if np.all(ans[i] == Max):
+        print(i)
+        break;
+#print (probs.T)
 
 
 
