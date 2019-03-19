@@ -151,9 +151,16 @@ layers_dims = [X_train.shape[0], 50, 10]
 if mode == "1":
     parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.05, num_iterations=9000, hidden_layers_activation_fn="tanh")
     fn.input_parameters(parameters)
+    print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
 
-print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
-print()
+    save = input("Сохранить параметры в папку best? 1 - да, 0 - нет: ")
+
+    if save == "1":
+        fn.input_parameters(parameters,"best")
+    print()
+else:
+    print (accuracy(X_test, fn.outputWB(layers_dims,"best"), y_test, q))
+    print()
 
 #Подсчёт ответа на конкретном файле
 print("Доступные файлы:")
@@ -164,7 +171,7 @@ for name in names:
     if os.path.isfile(fullname) and name.split('.')[1] == "jpg":
         print(name)
 print()
-path = input("Введите название файла в папке working, включая расширение, введите \" exit \" для завершения : ")
+path = input("Введите название файла в папке working, включая расширение, введите \"exit\" для завершения : ")
 print()
 while(str(path)!="exit"):
     path = os.path.join(dirName,path)
@@ -189,7 +196,10 @@ while(str(path)!="exit"):
 
 
         #print ((img/255).T)
-        probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims), "relu")
+        if mode == "0":
+            probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims,"best"), "relu")
+        else:
+            probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims), "relu")
         print("answer:")
         #print(probs)
         ans = np.asarray(probs.T[0])

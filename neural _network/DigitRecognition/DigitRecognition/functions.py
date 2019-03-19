@@ -2,7 +2,7 @@ import numpy as np
 import random
 #import scipy
 from PIL import Image
-
+import os
 
 '''
 Функции активации
@@ -72,11 +72,14 @@ def initialize_parameters(layers_dims):
     return parameters
 
 #Функция записи параметров в файл
-def input_parameters(parameters):
+def input_parameters(parameters,path=""):
     count = 1
     string = ''
     while np.all(parameters.get("W" + str(count))) != None:
-        file = open('W' + str(count) + '.txt', 'w')
+        if path != "":
+            file = open(os.path.join(os.path.realpath(path),'W' + str(count) + '.txt'), 'w')
+        else:
+            file = open('W' + str(count) + '.txt', 'w')
         for i in parameters["W" + str(count)]:
             for j in i:
                 string += str(j) + ' '
@@ -87,7 +90,10 @@ def input_parameters(parameters):
     count = 1
     string = ''
     while np.all(parameters.get("b" + str(count))) != None:
-        file = open('b' + str(count) + '.txt', 'w')
+        if path != "":
+            file = open(os.path.join(os.path.realpath(path),'b' + str(count) + '.txt'), 'w')
+        else:
+            file = open('b' + str(count) + '.txt', 'w')
         for i in parameters["b" + str(count)]:
             for j in i:
                 string += str(j) + ' '
@@ -99,15 +105,19 @@ def input_parameters(parameters):
 #print(inputWB(initWB([10, 4, 2]))) #пример использования последних двух функций
 
 #Функция считывания параметров из файла
-def outputWB(layers_dims):
+def outputWB(layers_dims,path=""):
     parameters = {}
     count = 1
     L = len(layers_dims)
     for l in range(1, L):
         matrix_W = np.zeros((layers_dims[l], layers_dims[l-1]))
         matrix_b = np.zeros((layers_dims[l], 1))
-        file_W = open('W' + str(count) + '.txt', 'r')
-        file_b = open('b' + str(count) + '.txt', 'r')
+        if path != "":
+            file_W = open(os.path.join(os.path.realpath(path),'W' + str(count) + '.txt'), 'r')
+            file_b = open(os.path.join(os.path.realpath(path),'b' + str(count) + '.txt'), 'r')
+        else:
+            file_W = open('W' + str(count) + '.txt', 'r')
+            file_b = open('b' + str(count) + '.txt', 'r')
         for i in range(layers_dims[l]):
             matrix_W[i] = file_W.readline().strip().split(' ')
             matrix_b[i] = file_b.readline().strip().split(' ')
