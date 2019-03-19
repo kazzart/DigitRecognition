@@ -147,9 +147,9 @@ while(t.notEmpty()):
 X_train /= 255
 X_test /= 255
 
-layers_dims = [X_train.shape[0], 30, 10]
+layers_dims = [X_train.shape[0], 50, 10]
 if mode == "1":
-    parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=8000, hidden_layers_activation_fn="tanh")
+    parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.05, num_iterations=9000, hidden_layers_activation_fn="tanh")
     fn.input_parameters(parameters)
 
 print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
