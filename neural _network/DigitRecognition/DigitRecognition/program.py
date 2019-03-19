@@ -55,17 +55,12 @@ def L_layer_model(
 def accuracy(X, parameters, y, q, activation_fn="relu"):
     probs, caches = fn.L_model_forward(X, parameters, activation_fn)
     probs = probs.T
-    print(probs)    
+    #print(probs)    
     for i in range(np.shape(probs)[0]):
         flag = True
-        #print (np.asarray(probs[i]))
         li = np.asarray(probs[i])
         Max = max(li)
-        
-        #for j in range(np.shape(probs)[1]):
-        #    if probs[i][j]>max:
-        #        max = probs[i][j]
-                
+               
         
         for j in range(np.shape(probs)[1]):
             if probs[i][j]==Max and flag:
@@ -101,8 +96,10 @@ def accuracy(X, parameters, y, q, activation_fn="relu"):
     
     return f"The accuracy rate is: {accuracy:.2f}%."
 
-
-
+mode = ""
+mode = input("Введите 0, если хотите использовать старые веса, или же 1, если хотите расчитать их заного: ")
+while (str(mode) != str(0)) and (str(mode)!= str(1)):
+    mode = input("Повторите ввод: ")
 s = Rand(60)
 if s.notEmpty():
     image, num = s.next()
@@ -110,15 +107,15 @@ if s.notEmpty():
     X_train = np.array([X1]).T
     y_train = np.array([y1]).T
     #print (np.shape(X), np.shape(y))
-
-while(s.notEmpty()):
-    image, num = s.next()
-    X1, y1 = fn.take_a_pic(image, num)
-    X2 = np.array([X1]).T
-    y2 = np.array([y1]).T
-    X_train = np.concatenate((X_train, X2), axis = 1)
-    y_train = np.concatenate((y_train, y2), axis = 1)
-    #print (np.shape(X_train), np.shape(y_train))
+if mode == "1":
+    while(s.notEmpty()):
+        image, num = s.next()
+        X1, y1 = fn.take_a_pic(image, num)
+        X2 = np.array([X1]).T
+        y2 = np.array([y1]).T
+        X_train = np.concatenate((X_train, X2), axis = 1)
+        y_train = np.concatenate((y_train, y2), axis = 1)
+        #print (np.shape(X_train), np.shape(y_train))
 
 coun = 0
 coun2 = 1
@@ -148,46 +145,72 @@ while(t.notEmpty()):
     #print (np.shape(X_test), np.shape(y_test))
 
 X_train /= 255
-#X_test /= 255
-
-layers_dims = [X_train.shape[0], 30, 10]
-
-parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=8000, hidden_layers_activation_fn="tanh")
-fn.input_parameters(parameters)
-
-print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
-path = input("Введите название файла в папке working, включая расширение: ")
-path = os.path.join(os.path.realpath(r"..\..\..\ "),"samples","working",path)
-im = Image.open(path)
-img_temp = np.asarray(im)
-img = np.zeros((100))
-#print (img_temp, rnd)
-count = 0
-for i in img_temp:
-    for j in i:
-        img[count] = j
-        count += 1
-
-img = np.concatenate((np.array([img]).T, np.array([img]).T), axis = 1)
-#print (img)
-X_test = img
-
 X_test /= 255
 
+layers_dims = [X_train.shape[0], 30, 10]
+if mode == "1":
+    parameters = L_layer_model( X_train, y_train, layers_dims, learning_rate=0.03, num_iterations=8000, hidden_layers_activation_fn="tanh")
+    fn.input_parameters(parameters)
+
+print (accuracy(X_test, fn.outputWB(layers_dims), y_test, q))
+print()
+
+#Подсчёт ответа на конкретном файле
+print("Доступные файлы:")
+dirName = os.path.join(os.path.realpath(r"..\..\..\ "),"samples","working")
+names = os.listdir(dirName)
+for name in names:
+    fullname = os.path.join(dirName, name)
+    if os.path.isfile(fullname) and name.split('.')[1] == "jpg":
+        print(name)
+print()
+path = input("Введите название файла в папке working, включая расширение, введите \" exit \" для завершения : ")
+print()
+while(str(path)!="exit"):
+    path = os.path.join(dirName,path)
+    try:
+        im = Image.open(path)
+        img_temp = np.asarray(im)
+        img = np.zeros((100))
+        #print (img_temp, rnd)
+        count = 0
+        for i in img_temp:
+            for j in i:
+                img[count] = j
+                count += 1
+
+        img = np.concatenate((np.array([img]).T, np.array([img]).T), axis = 1)
+        #print (img)
+        X_test = img
+
+        X_test /= 255
 
 
 
-#print ((img/255).T)
-probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims), "relu")
-print("answer:")
-print(probs)
-ans = np.asarray(probs.T[0])
-Max = max(ans)
-for i in range(len(ans)):
-    if np.all(ans[i] == Max):
-        print(i)
-        break;
-#print (probs.T)
+
+        #print ((img/255).T)
+        probs, caches = fn.L_model_forward(X_test, fn.outputWB(layers_dims), "relu")
+        print("answer:")
+        #print(probs)
+        ans = np.asarray(probs.T[0])
+        Max = max(ans)
+        for i in range(len(ans)):
+            if np.all(ans[i] == Max):
+                print(i)
+                break;
+        #print (probs.T)
+    except IOError:
+        print("Can't open image")
+    print()
+    print("Доступные файлы:")
+    names = os.listdir(dirName)
+    for name in names:
+        fullname = os.path.join(dirName, name)
+        if os.path.isfile(fullname) and name.split('.')[1] == "jpg":
+            print(name)
+    print()
+    path = input("Введите название файла в папке working, включая расширение, введите \" exit \" для завершения : ")
+    print()
 
 
 
