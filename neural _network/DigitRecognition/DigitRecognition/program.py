@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import random
 from PIL import Image
 import os
@@ -44,11 +44,11 @@ def L_layer_model(
             cost_list.append(cost)
 
     
-    plt.figure(figsize=(10, 6))
-    plt.plot(cost_list)
-    plt.xlabel("Iterations (per hundreds)")
-    plt.ylabel("Loss")
-    plt.title(f"Loss curve for the learning rate = {learning_rate}")
+    #plt.figure(figsize=(10, 6))
+    #plt.plot(cost_list)
+    #plt.xlabel("Iterations (per hundreds)")
+    #plt.ylabel("Loss")
+    #plt.title(f"Loss curve for the learning rate = {learning_rate}")
     return parameters
 
 
