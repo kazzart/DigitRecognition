@@ -76,11 +76,11 @@ def accuracy(X, parameters, y, activation_fn="relu"):
                 acc[j] +=1
         if flag:
             count +=1
-
+    print(probs)
     for i in range(10):
-        acc[i] *= np.shape(probs)[0]/10
+        acc[i] *= 100/(np.shape(probs)[0]/np.shape(probs)[1])
 
-    accuracy = count
+    accuracy = count * 100/(np.shape(probs)[0])
     print(acc)
     print()
     
