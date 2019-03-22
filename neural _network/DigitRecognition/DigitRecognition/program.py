@@ -1,27 +1,14 @@
 import numpy as np
-#import matplotlib.pyplot as plt
 import random
-from PIL import Image
 import os
-#import scipy
 import functions as fn
-from RandomSample import Rand
-
-
-
 def L_layer_model(
         X, y, layers_dims, learning_rate=0.01, num_iterations=3000,
         print_cost=True, hidden_layers_activation_fn="relu"):
     random.seed(version =2)
     np.random.seed(random.randint(0,1000))
-
     
     parameters = fn.initialize_parameters(layers_dims)
-
-    
-    #cost_list = []
-
-    
     for i in range(num_iterations):
     
         AL, caches = fn.L_model_forward(
@@ -39,9 +26,6 @@ def L_layer_model(
     
         if (i + 1) % 100 == 0 and print_cost:
             print(f"The cost after {i + 1} iterations is: {cost:.4f}")
-        
-        #if i % 100 == 0:
-        #    cost_list.append(cost)
     return parameters
 
 
@@ -74,12 +58,11 @@ def accuracy(X, parameters, y, activation_fn="relu"):
                 break
             elif probs[i][j] == 1:
                 acc[j] +=1
+                break
         if flag:
             count +=1
-    print(probs)
     for i in range(10):
         acc[i] *= 100/(np.shape(probs)[0]/np.shape(probs)[1])
-
     accuracy = count * 100/(np.shape(probs)[0])
     print(acc)
     print()
@@ -98,15 +81,16 @@ def showFiles():
 
 def generateTrain(qua, path = "learn"):
     if not os.path.isfile(path):
+        from RandomSample import Rand
         s = Rand(qua,path)
-        img = s.next
+        imgNext = s.next
         if s.notEmpty():
-            image, num = img()
+            image, num = imgNext()
             X1, y1 = fn.take_a_pic(image, num)
             X_train = np.array([X1]).T
             y_train = np.array([y1]).T
         while(s.notEmpty()):
-            image, num = img()
+            image, num = imgNext()
             X1, y1 = fn.take_a_pic(image, num)
             X2 = np.array([X1]).T
             y2 = np.array([y1]).T
@@ -114,6 +98,7 @@ def generateTrain(qua, path = "learn"):
             y_train = np.concatenate((y_train, y2), axis = 1)
         return X_train/255,y_train
     else:
+        from PIL import Image
         im = Image.open(path)
         img_temp = np.asarray(im)
         img = np.zeros((100))
@@ -126,8 +111,6 @@ def generateTrain(qua, path = "learn"):
         img = np.concatenate((np.array([img]).T, np.array([img]).T), axis = 1)
     return img/255
 
-
-mode = ""
 mode = input("Введите 0, если хотите использовать старые веса, или же 1, если хотите расчитать их заного: ")
 while (str(mode) != str(0)) and (str(mode)!= str(1)):
     mode = input("Повторите ввод: ")

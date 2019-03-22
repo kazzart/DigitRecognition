@@ -127,17 +127,12 @@ def outputWB(layers_dims,path=""):
         parameters["b" + str(count)] = matrix_b
         count += 1    
     return parameters
-#print(outputWB([10, 4, 2]))
 
 '''
 Feed Forward
 '''
 
 def linear_forward(A_prev, W, b):
-
-    #if len(np.shape(A_prev)) == 1:
-    #    Z = np.dot(W, np.array([A_prev]).T) + b
-    #else:
     Z = np.dot(W, A_prev) + b
     cache = (A_prev, W, b)
     return Z, cache
